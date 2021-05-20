@@ -1,11 +1,12 @@
 import json
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
-class ChatRoomConsumer(WebsocketConsumer):
+class ChatRoomConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
-        self.room_name = self.scope['url_router']['kwargs']['room_name']
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
+        print(self.room_group_name)
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -13,6 +14,22 @@ class ChatRoomConsumer(WebsocketConsumer):
         )
 
         await self.accept()
+        print('Connected!!')
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'tester_message',
+                'tester' : 'hello world',
+            }
+        )
+
+    async def tester_message(self, event):
+        tester = event['tester']
+
+        await self.send(text_data=json.dumps({
+            'tester' : tester,
+        }))
 
     async def disconnect(self, close_code):
         
@@ -25,6 +42,10 @@ class ChatRoomConsumer(WebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        username = text_data_json['username']
+
+        print(message)
+        print(username)
 
         self.send(text_data=json.dumps(
             {'message': message}
