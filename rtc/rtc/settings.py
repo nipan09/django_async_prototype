@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +25,7 @@ SECRET_KEY = '@q8$clli^%$#1w_!0p#4ncq51yggz-fray79nx4b(*@=0$j5gf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rtc',
     'channels',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'rtc.urls'
+
 
 TEMPLATES = [
     {
@@ -122,3 +123,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 ASGI_APPLICATION = 'rtc.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default" :{
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
